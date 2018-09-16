@@ -2,18 +2,33 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
 
 // Config
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
+mongoose.connect('mongodb://localhost/yelp_camp', { useNewUrlParser: true });
 
-// TEMPORAL DDBB
-var campgrounds = [
-    { name: 'Salmon Creek', image: 'https://images.unsplash.com/photo-1533575770077-052fa2c609fc?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=ebb0b2d80f4b2d82f3587492b80e2321&auto=format&fit=crop&w=750&q=80' },
-    { name: 'Granite Hill', image: 'https://images.unsplash.com/photo-1455763916899-e8b50eca9967?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=ec456c4aeb71d3aecbe65e586d186ec0&auto=format&fit=crop&w=750&q=80' },
-    { name: 'Mountain Goat\'s Rest', image: 'https://images.unsplash.com/photo-1487730116645-74489c95b41b?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=aa6e65fcad07b9a68420c430034f84f2&auto=format&fit=crop&w=750&q=80' }
-];
+// SCHEMA SETUP
+var campgroundSchema = new mongoose.Schema({
+    name: String,
+    image: String
+});
 
+var Campground = mongoose.model('Campground', campgroundSchema);
+
+// TEMPORAL
+// Campground.create({
+//     name: 'Granite Hill',
+//     image: 'https://images.unsplash.com/photo-1533575770077-052fa2c609fc?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=ebb0b2d80f4b2d82f3587492b80e2321&auto=format&fit=crop&w=750&q=80'
+// }, function(err, campground){
+//     if(err){
+//         console.log(err);
+//     } else {
+//         console.log('Newly Created Campground');
+//         console.log(campground);
+//     }
+// });
 
 // ===== ROUTES =====
 
@@ -24,7 +39,14 @@ app.get('/', function(req, res){
 
 // Campgrounds
 app.get('/campgrounds', function(req, res){
-    res.render('campgrounds', {campgrounds: campgrounds});
+    // Get all campgrounds from DB
+    Campground.find({}, function(err, AllCampgrounds){
+        if(err){
+            console.log(err);
+        } else {
+            res.render('campgrounds', {campgrounds: AllCampgrounds});
+        }
+    });
 });
 
 app.post('/campgrounds', function(req, res){
@@ -32,9 +54,15 @@ app.post('/campgrounds', function(req, res){
     var name = req.body.name;
     var image = req.body.image;
     var newCampground = {name: name, image: image};
-    campgrounds.push(newCampground);
-    // redirex back
-    res.redirect('/campgrounds');
+    // Create a new campground and save to DB
+    Campground.create(newCampground, function(err, newlyCreated){
+        if(err) {
+            console.log();
+        } else {
+            // redirex back to campgrounds page
+            res.redirect('/campgrounds');
+        }
+    })    
 });
 
 app.get('/campgrounds/new', function(req, res){
