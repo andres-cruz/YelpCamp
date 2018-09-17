@@ -5,8 +5,10 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 Campground = require('./models/campground');
 // Comment = require('./models/comment');
+seedDB = require('./seeds');
 
 // Config
+seedDB();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 mongoose.connect('mongodb://localhost/yelp_camp', { useNewUrlParser: true });
