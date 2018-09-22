@@ -4,7 +4,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 Campground = require('./models/campground');
-// Comment = require('./models/comment');
+Comment = require('./models/comment');
 seedDB = require('./seeds');
 
 // Config
@@ -81,8 +81,30 @@ app.get('/campgrounds/:id/comments/new', function(req, res){
             res.render('comments/new', {campground: campground});
         }
     })
-    
-    
+});
+
+app.post('/campgrounds/:id/comments', function(req, res){
+    // Look up campground using ID
+    Campground.findById(req.params.id, function(err, campground){
+        if(err) {
+            console.log(err);
+            res.redirect('/campgrounds');
+        } else {
+            Comment.create(req.body.comment, function(err, comment){
+                if(err) {
+                    console.log(err);
+                } else {
+                    campground.comments.push(comment);
+                    campground.save();
+                    res.redirect('/campgrounds/' + campground._id);
+                }
+            });
+        }
+    });
+    // Create new comment
+    // Connet new comment to campground
+    // Redirect to campground show page
+
 });
 
 
