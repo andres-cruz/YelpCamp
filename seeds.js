@@ -50,7 +50,7 @@ function seedDB() {
                 }
             })
         });
-    });
+    }); // till here
 
 
     // Add a few comments
