@@ -9,7 +9,7 @@ var methodOverride = require('method-override');
 Campground = require('./models/campground');
 Comment = require('./models/comment');
 User = require('./models/user');
-seedDB = require('./seeds'); // seed the database
+// seedDB = require('./seeds'); // seed the database
 
 // Requiring routes
 var commentRoutes = require('./routes/comments'),
