@@ -18,7 +18,8 @@ var commentRoutes = require('./routes/comments'),
     indexRoutes = require('./routes/index');
 
 // Config
-mongoose.connect(process.env.DATABASEURL);
+var url = process.env.DATABASEURL;
+mongoose.connect(url, { useNewUrlParser: true });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
